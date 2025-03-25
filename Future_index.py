@@ -74,15 +74,6 @@ class Future:
         config.FUTURES = self.convert_price_to_decimal(config.FUTURES)
 
         logging.info('Finished Futures population.')
-
-    @staticmethod
-    def scan(symbols_csv):
-        """
-        Fetch security futures for corresponding CSV symbols.
-
-        This function retrieves security futures from the IBKR API by providing a list of symbols
-        in a CSV format. It then returns the response as JSON data.
-        """
         logging.info('Fetching futures details...')
 
         # Retrieve security futures
@@ -103,6 +94,32 @@ class Future:
         logging.info(f'Response from {url}: {response.status_code} : Successfully retrieved security futures')
 
         return response.json()
+    @staticmethod
+    def scan(symbols_csv):
+        """
+        Fetch security futures for the provided comma-separated symbols list.
+        Uses the IBKR /trsrv/futures endpoint.
+        """
+        url = f"{config.IBKR_BASE_URL}/v1/api/trsrv/futures?symbols={symbols_csv}"
+
+        # Wait for a token using the leaky bucket
+        leaky_bucket.wait_for_token()
+
+        try:
+            logging.info(f"📡 Requesting futures from: {url}")
+            response = requests.get(url, verify=False)
+
+            if response.status_code != 200:
+                logging.error(f"❌ Failed to fetch futures. Status {response.status_code}")
+                return {}
+
+            logging.info("✅ Successfully fetched futures.")
+            return response.json()
+
+        except Exception as e:
+            logging.exception(f"❌ Exception occurred while fetching futures: {e}")
+            return {}
+
 
     @staticmethod
     def extract_futures_contracts(futures):

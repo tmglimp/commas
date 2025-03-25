@@ -1,7 +1,7 @@
 """
 KPIs2_Orders
 """
-
+import json
 import math
 from datetime import datetime
 
@@ -24,8 +24,18 @@ def get_acct_dets():
     # Wait until an API request token is available (rate-limiting control)
     leaky_bucket.wait_for_token()
 
+    print(f'Requesting from {url}')
+
     # Sending the GET request
     pnl_res = requests.get(url=url, verify=False)
+
+    print(f'Response from {url}: {pnl_res.status_code}')
+
+    if pnl_res.headers.get("Content-Type", "").startswith("application/json"):
+        print(json.dumps(pnl_res.json(), indent=2))
+    else:
+        print(pnl_res.text)
+
     pnl_json = pnl_res.json()  # Parse JSON directly
     
     # Use the IBKR_ACCT_ID to get the value of 'nl'
@@ -35,7 +45,7 @@ def get_acct_dets():
 
 def calculate_quantities_with_sma(HEDGES_Combos):
     SMA = get_acct_dets()*4
-    print(SMA)
+    print(f'SMA => {SMA}')
     calculate_quantities(HEDGES_Combos, SMA)
 
 

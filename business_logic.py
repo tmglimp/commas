@@ -2,9 +2,13 @@ import time
 
 from KPIs2_Orders import calculate_quantities_with_sma
 import config
+from leaky_bucket_orders import OrdersLeakyBucket
 from orders import orderRequest
 from cf_ctd import process_futures_data
 from ctd_fut_kpis import run_fixed_income_calculation
+
+# Initialize the leaky bucket for orders
+leaky_bucket_orders = OrdersLeakyBucket()
 
 
 def business_logic_function():
@@ -18,6 +22,8 @@ def business_logic_function():
         # IF any other script modifies the config.* objects, business_logic.py will always have the latest version.
         if config.USTs is not None and config.FUTURES is not None and not config.USTs.empty and not config.FUTURES.empty:
             print("****Business logic started, leveraging other integrated scripts***")
+
+            leaky_bucket_orders.wait_for_slot()  # Wait until there's an available slot for orders
 
             print("Scanned USTs:")
             print(config.USTs)

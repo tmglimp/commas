@@ -73,7 +73,7 @@ def run_fixed_income_calculation(HEDGES):
                                                                            day_count=day_count), axis=1)
 
     # Now, perform the division and store the results in new columns
-    HEDGES['FUT_Price'] = HEDGES['CTD_BPrice'] / HEDGES['CTD_CF']
+    HEDGES['FUT_TPrice'] = HEDGES['CTD_BPrice'] / HEDGES['CTD_CF']
     HEDGES['FUT_MDur'] = HEDGES['CTD_MDur'] / HEDGES['CTD_CF']
     HEDGES['FUT_MacDur'] = HEDGES['CTD_MacDur'] / HEDGES['CTD_CF']
     HEDGES['FUT_DV01'] = HEDGES['CTD_DV01'] / HEDGES['CTD_CF']

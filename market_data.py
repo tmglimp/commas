@@ -5,6 +5,7 @@ import requests
 import urllib3
 
 import config
+from enums.USTContractField import USTContractField
 from enums.USTMarketDataField import USTMarketDataField
 from leaky_bucket import leaky_bucket
 
@@ -91,7 +92,7 @@ class MarketData:
 
             for data in market_data:
 
-                if contract.get(USTMarketDataField.con_id.value) == data.get(USTMarketDataField.con_id.value):
+                if contract.get(USTContractField.con_id.name) == data.get(USTContractField.con_id.value):
                     contract[USTMarketDataField.symbol.name] = data.get(str(USTMarketDataField.symbol.value))
                     contract[USTMarketDataField.text.name] = data.get(str(USTMarketDataField.text.value))
                     contract[USTMarketDataField.last_price.name] = data.get(str(USTMarketDataField.last_price.value))
